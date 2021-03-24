@@ -1,11 +1,7 @@
-const {
-  MongoClient
-} = require('mongodb');
+const { MongoClient } = require('mongodb');
 const csv = require('csv-parser');
 const fs = require('fs');
-const {
-  mainModule
-} = require('process');
+const { mainModule } = require('process');
 
 const MONGO_URL = 'mongodb://localhost:27017/';
 const DB_NAME = '911-calls';
@@ -21,7 +17,19 @@ const insertCalls = async function (db, callback) {
     .on('data', data => {
 
       const call = {
-      }; // TODO créer l'objet call à partir de la ligne
+        "lat": data.lat,
+        "lng": data.lng,
+        "location": [parseFloat(data.lng), parseFloat(data.lat)],
+        "desc": data.desc,
+        "zip": data.zip,
+        "title": data.title.split(":")[1].slice(1),
+        "category": data.title.split(":")[0],
+        "timeStamp": data.timeStamp,
+        "monthYear": data.timeStamp.slice(0, 7),
+        "twp": data.twp,
+        "addr": data.addr,
+        "e": data.e
+      };
 
       calls.push(call);
     })

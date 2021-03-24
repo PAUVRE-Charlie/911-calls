@@ -1,0 +1,453 @@
+POST /911-calls/_search
+{
+    "size": 0,
+    "aggs" : {
+        "categories" : {
+            "terms": {
+                "field": "category.keyword"
+            }
+        }
+    }
+}
+
+{
+  "took" : 9,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : {
+      "value" : 10000,
+      "relation" : "gte"
+    },
+    "max_score" : null,
+    "hits" : [ ]
+  },
+  "aggregations" : {
+    "categories" : {
+      "doc_count_error_upper_bound" : 0,
+      "sum_other_doc_count" : 0,
+      "buckets" : [
+        {
+          "key" : "EMS",
+          "doc_count" : 75569
+        },
+        {
+          "key" : "Traffic",
+          "doc_count" : 54536
+        },
+        {
+          "key" : "Fire",
+          "doc_count" : 23052
+        }
+      ]
+    }
+  }
+}
+
+
+##############################################################################
+
+POST /911-calls/_search
+{
+    "size": 0,
+    "aggs" : {
+        "dates" : {
+            "terms": {
+                "field": "monthYear",
+                "order": {
+                  "_count": "desc"
+                }, 
+                "size": 3
+            }
+        }
+    }
+}
+
+{
+  "took" : 5,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : {
+      "value" : 10000,
+      "relation" : "gte"
+    },
+    "max_score" : null,
+    "hits" : [ ]
+  },
+  "aggregations" : {
+    "dates" : {
+      "doc_count_error_upper_bound" : 0,
+      "sum_other_doc_count" : 115399,
+      "buckets" : [
+        {
+          "key" : 1451606400000,
+          "key_as_string" : "2016-01-01T00:00:00.000Z",
+          "doc_count" : 13094
+        },
+        {
+          "key" : 1475280000000,
+          "key_as_string" : "2016-10-01T00:00:00.000Z",
+          "doc_count" : 12502
+        },
+        {
+          "key" : 1480550400000,
+          "key_as_string" : "2016-12-01T00:00:00.000Z",
+          "doc_count" : 12162
+        }
+      ]
+    }
+  }
+}
+
+#######################################################################
+
+GET 911-calls/_search
+{
+  "size": 0, 
+  "query": { 
+    "bool": { 
+      "must": [
+        { 
+          "match": {
+          "title": "OVERDOSE"
+          }
+        }
+      ]
+    }
+  },
+  "aggs": {
+    "cities": {
+      "terms": {
+        "field": "twp.keyword",
+        "order": {
+          "_count": "desc"
+        }, 
+        "size": 3
+      }
+    }
+  }
+}
+
+{
+  "took" : 2,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : {
+      "value" : 1947,
+      "relation" : "eq"
+    },
+    "max_score" : null,
+    "hits" : [ ]
+  },
+  "aggregations" : {
+    "cities" : {
+      "doc_count_error_upper_bound" : 0,
+      "sum_other_doc_count" : 1454,
+      "buckets" : [
+        {
+          "key" : "POTTSTOWN",
+          "doc_count" : 203
+        },
+        {
+          "key" : "NORRISTOWN",
+          "doc_count" : 180
+        },
+        {
+          "key" : "UPPER MORELAND",
+          "doc_count" : 110
+        }
+      ]
+    }
+  }
+}
+
+
+#######################################################################
+
+GET /911-calls/_search
+{
+  "query": {
+    "bool": {
+      "must": {
+        "match_all": {}
+      },
+      "filter": {
+        "geo_distance": {
+          "distance": "500m",
+          "location": {
+            "lat": 40.241493,
+            "lon": -75.283783
+          }
+        }
+      }
+    }
+  }
+}
+
+{
+  "took" : 6,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : {
+      "value" : 717,
+      "relation" : "eq"
+    },
+    "max_score" : 1.0,
+    "hits" : [
+      {
+        "_index" : "911-calls",
+        "_type" : "_doc",
+        "_id" : "SUSQUEHANNA AVE & W MAIN ST;  LANSDALE; Station 345B; 2015-12-10 @ 17:42:44;",
+        "_score" : 1.0,
+        "_source" : {
+          "lat" : "40.2432578",
+          "lng" : "-75.2865516",
+          "location" : [
+            -75.2865516,
+            40.2432578
+          ],
+          "desc" : "SUSQUEHANNA AVE & W MAIN ST;  LANSDALE; Station 345B; 2015-12-10 @ 17:42:44;",
+          "zip" : "19446",
+          "title" : "RESPIRATORY EMERGENCY",
+          "category" : "EMS",
+          "timeStamp" : "2015-12-10 17:42:44",
+          "monthYear" : "2015-12",
+          "twp" : "LANSDALE",
+          "addr" : "SUSQUEHANNA AVE & W MAIN ST",
+          "e" : "1"
+        }
+      },
+      {
+        "_index" : "911-calls",
+        "_type" : "_doc",
+        "_id" : "HANCOCK ST & RR CROSSING; LANSDALE; 2015-12-11 @ 08:06:28;",
+        "_score" : 1.0,
+        "_source" : {
+          "lat" : "40.2414952",
+          "lng" : "-75.2837862",
+          "location" : [
+            -75.2837862,
+            40.2414952
+          ],
+          "desc" : "HANCOCK ST & RR CROSSING; LANSDALE; 2015-12-11 @ 08:06:28;",
+          "zip" : "",
+          "title" : "VEHICLE ACCIDENT -",
+          "category" : "Traffic",
+          "timeStamp" : "2015-12-11 08:06:28",
+          "monthYear" : "2015-12",
+          "twp" : "LANSDALE",
+          "addr" : "HANCOCK ST & RR CROSSING",
+          "e" : "1"
+        }
+      },
+      {
+        "_index" : "911-calls",
+        "_type" : "_doc",
+        "_id" : "BROAD ST & E 4TH ST;  LANSDALE; Station 345; 2015-12-11 @ 10:36:28;",
+        "_score" : 1.0,
+        "_source" : {
+          "lat" : "40.2435820",
+          "lng" : "-75.2817220",
+          "location" : [
+            -75.281722,
+            40.243582
+          ],
+          "desc" : "BROAD ST & E 4TH ST;  LANSDALE; Station 345; 2015-12-11 @ 10:36:28;",
+          "zip" : "19446",
+          "title" : "CVA/STROKE",
+          "category" : "EMS",
+          "timeStamp" : "2015-12-11 10:36:28",
+          "monthYear" : "2015-12",
+          "twp" : "LANSDALE",
+          "addr" : "BROAD ST & E 4TH ST",
+          "e" : "1"
+        }
+      },
+      {
+        "_index" : "911-calls",
+        "_type" : "_doc",
+        "_id" : "3RD ST & N BROAD ST;  LANSDALE; Station 345; 2015-12-11 @ 18:10:04;",
+        "_score" : 1.0,
+        "_source" : {
+          "lat" : "40.2428238",
+          "lng" : "-75.2824703",
+          "location" : [
+            -75.2824703,
+            40.2428238
+          ],
+          "desc" : "3RD ST & N BROAD ST;  LANSDALE; Station 345; 2015-12-11 @ 18:10:04;",
+          "zip" : "19446",
+          "title" : "HEAD INJURY",
+          "category" : "EMS",
+          "timeStamp" : "2015-12-11 18:10:04",
+          "monthYear" : "2015-12",
+          "twp" : "LANSDALE",
+          "addr" : "3RD ST & N BROAD ST",
+          "e" : "1"
+        }
+      },
+      {
+        "_index" : "911-calls",
+        "_type" : "_doc",
+        "_id" : "4TH ST & N CHESTNUT ST;  LANSDALE; Station 345; 2015-12-12 @ 09:40:56;",
+        "_score" : 1.0,
+        "_source" : {
+          "lat" : "40.2424784",
+          "lng" : "-75.2798183",
+          "location" : [
+            -75.2798183,
+            40.2424784
+          ],
+          "desc" : "4TH ST & N CHESTNUT ST;  LANSDALE; Station 345; 2015-12-12 @ 09:40:56;",
+          "zip" : "19446",
+          "title" : "FALL VICTIM",
+          "category" : "EMS",
+          "timeStamp" : "2015-12-12 09:40:56",
+          "monthYear" : "2015-12",
+          "twp" : "LANSDALE",
+          "addr" : "4TH ST & N CHESTNUT ST",
+          "e" : "1"
+        }
+      },
+      {
+        "_index" : "911-calls",
+        "_type" : "_doc",
+        "_id" : "JENKINS AVE & S BROAD ST; LANSDALE; 2015-12-12 @ 13:20:49-Station:STA14;",
+        "_score" : 1.0,
+        "_source" : {
+          "lat" : "40.2408119",
+          "lng" : "-75.2845065",
+          "location" : [
+            -75.2845065,
+            40.2408119
+          ],
+          "desc" : "JENKINS AVE & S BROAD ST; LANSDALE; 2015-12-12 @ 13:20:49-Station:STA14;",
+          "zip" : "19446",
+          "title" : "FIRE ALARM",
+          "category" : "Fire",
+          "timeStamp" : "2015-12-12 13:20:49",
+          "monthYear" : "2015-12",
+          "twp" : "LANSDALE",
+          "addr" : "JENKINS AVE & S BROAD ST",
+          "e" : "1"
+        }
+      },
+      {
+        "_index" : "911-calls",
+        "_type" : "_doc",
+        "_id" : "VINE ST & S BROAD ST;  LANSDALE; Station 345B; 2015-12-12 @ 19:23:33;",
+        "_score" : 1.0,
+        "_source" : {
+          "lat" : "40.2403363",
+          "lng" : "-75.2848915",
+          "location" : [
+            -75.2848915,
+            40.2403363
+          ],
+          "desc" : "VINE ST & S BROAD ST;  LANSDALE; Station 345B; 2015-12-12 @ 19:23:33;",
+          "zip" : "19446",
+          "title" : "CARDIAC EMERGENCY",
+          "category" : "EMS",
+          "timeStamp" : "2015-12-12 19:23:33",
+          "monthYear" : "2015-12",
+          "twp" : "LANSDALE",
+          "addr" : "VINE ST & S BROAD ST",
+          "e" : "1"
+        }
+      },
+      {
+        "_index" : "911-calls",
+        "_type" : "_doc",
+        "_id" : "S MAIN ST & RR CROSSING; NORTH WALES; 2015-12-14 @ 17:29:10;",
+        "_score" : 1.0,
+        "_source" : {
+          "lat" : "40.2425522",
+          "lng" : "-75.2853758",
+          "location" : [
+            -75.2853758,
+            40.2425522
+          ],
+          "desc" : "S MAIN ST & RR CROSSING; NORTH WALES; 2015-12-14 @ 17:29:10;",
+          "zip" : "19446",
+          "title" : "ROAD OBSTRUCTION -",
+          "category" : "Traffic",
+          "timeStamp" : "2015-12-14 17:29:10",
+          "monthYear" : "2015-12",
+          "twp" : "NORTH WALES",
+          "addr" : "S MAIN ST & RR CROSSING",
+          "e" : "1"
+        }
+      },
+      {
+        "_index" : "911-calls",
+        "_type" : "_doc",
+        "_id" : "3RD ST & N CHESTNUT ST;  LANSDALE; Station 345; 2015-12-16 @ 06:49:30;",
+        "_score" : 1.0,
+        "_source" : {
+          "lat" : "40.2417040",
+          "lng" : "-75.2805779",
+          "location" : [
+            -75.2805779,
+            40.241704
+          ],
+          "desc" : "3RD ST & N CHESTNUT ST;  LANSDALE; Station 345; 2015-12-16 @ 06:49:30;",
+          "zip" : "19446",
+          "title" : "RESPIRATORY EMERGENCY",
+          "category" : "EMS",
+          "timeStamp" : "2015-12-16 06:49:30",
+          "monthYear" : "2015-12",
+          "twp" : "LANSDALE",
+          "addr" : "3RD ST & N CHESTNUT ST",
+          "e" : "1"
+        }
+      },
+      {
+        "_index" : "911-calls",
+        "_type" : "_doc",
+        "_id" : "MAIN ST & N LINE ST; LANSDALE; 2015-12-17 @ 00:38:34;",
+        "_score" : 1.0,
+        "_source" : {
+          "lat" : "40.2389857",
+          "lng" : "-75.2793659",
+          "location" : [
+            -75.2793659,
+            40.2389857
+          ],
+          "desc" : "MAIN ST & N LINE ST; LANSDALE; 2015-12-17 @ 00:38:34;",
+          "zip" : "19446",
+          "title" : "ROAD OBSTRUCTION -",
+          "category" : "Traffic",
+          "timeStamp" : "2015-12-17 00:38:34",
+          "monthYear" : "2015-12",
+          "twp" : "LANSDALE",
+          "addr" : "MAIN ST & N LINE ST",
+          "e" : "1"
+        }
+      }
+    ]
+  }
+}
+

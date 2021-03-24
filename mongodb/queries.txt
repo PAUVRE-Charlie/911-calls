@@ -1,0 +1,24 @@
+db.calls.aggregate([ {"$group":{_id:"$category",counter:{$sum:1}}}])
+
+{ "_id" : "Fire", "counter" : 23056 }
+{ "_id" : "EMS", "counter" : 75589 }
+{ "_id" : "Traffic", "counter" : 54549 }
+
+db.calls.aggregate([ {"$group":{_id:"$monthYear",counter:{$sum:1}}}, {$sort:{"counter": -1}}, {$limit:3}])
+
+{ "_id" : "2016-01", "counter" : 13096 }
+{ "_id" : "2016-10", "counter" : 12502 }
+{ "_id" : "2016-12", "counter" : 12162 }
+
+db.calls.aggregate([{$match: {"title": "OVERDOSE"}}, {"$group":{_id:"$twp",counter:{$sum:1}}}, {$sort:{"counter": -1}}, {$limit:3}])
+
+{ "_id" : "POTTSTOWN", "counter" : 203 }
+{ "_id" : "NORRISTOWN", "counter" : 180 }
+{ "_id" : "UPPER MORELAND", "counter" : 110 }
+
+db.calls.createIndex({"location": "2dsphere"})
+db.calls.find({ location : { $near : {$geometry: {type: "Point", coordinates: [ -75.283783, 40.241493 ]}, $maxDistance:500}}}).count()
+
+717
+
+
